@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MOSU1
+namespace MOSU1.TrashCan
 {
     // Клас ПІД-регулятора, який враховує компенсацію інтегрального насичення
     public class PIDController

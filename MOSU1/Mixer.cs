@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using SampleModel.Blocks;  // Підключення нового PID-регулятора
 
 namespace MOSU1
 {
     public partial class Mixer : Form
     {
-        private double V = 5.0; // Об'єм змішувача (м^3)
-        private double rho = 10.0; // Густина рідини (кг/м^3)
+        private double V = 5.0;      // Об'єм змішувача (м^3)
+        private double rho = 10.0;   // Густина рідини (кг/м^3)
         private double G_in1, G_in2, C_in1, C_in2;
         private double concentration;
         private double time = 0;
-        private double dt = 1; // Крок часу (сек)
+        private double dt = 1;       // Крок часу (сек)
         private System.Windows.Forms.Timer simulationTimer;
 
-        // Параметри ПІД-регулятора та бажана концентрація (setpoint)
-        private PIDController pid;
+        // Використовуємо оновлений PID-регулятор (PIDBlock)
+        private PIDBlock pid;
+        // Бажане значення концентрації
+        private double setpoint; // Add this field to the Mixer class
 
         private bool autoMode = false;  // false – режим ручного керування, true – автоматичний режим
 
@@ -23,16 +26,21 @@ namespace MOSU1
         {
             InitializeComponent();
 
-            // Ініціалізація ПІД-регулятора:
-            // Наприклад, керуємо G_in1 в межах від 0 до 10 (одиниці, наприклад, кг/с)
-            pid = new PIDController(kp: 2.0, ki: 0.5, kd: 0.1, outMin: 0.0, outMax: 1000.0);
+            // Ініціалізація PID-регулятора: передаємо крок dt
+            pid = new PIDBlock(dt);
+            pid.K = 2.0;
+            pid.Ki = 0.5;
+            pid.Td = 0.1;
+            pid.UpLimit = 1000.0;
+            pid.DownLimit = 0.0;
 
-
+            // Встановлюємо бажане значення концентрації
+            setpoint = 0.70;
 
             // Ініціалізація таймера
             simulationTimer = new System.Windows.Forms.Timer();
-            simulationTimer.Interval = 1000; // Оновлення кожні 100 мс
-            simulationTimer.Tick += SimulationStep; // Прив'язка обробника подій
+            simulationTimer.Interval = 1000; // 1 секунда
+            simulationTimer.Tick += SimulationStep;
 
             InitializeSimulation();
         }
@@ -42,7 +50,7 @@ namespace MOSU1
             // Початкові значення потоків та концентрацій
             G_in1 = 2.0;
             G_in2 = 2.0;
-            C_in1 = 1;
+            C_in1 = 100;
             C_in2 = 1;
             concentration = (G_in1 * C_in1 + G_in2 * C_in2) / (G_in1 + G_in2);
 
@@ -50,31 +58,26 @@ namespace MOSU1
             chartConcentration.ChartAreas[0].AxisY.Title = "Концентрація (кг/кг)";
             chartConcentration.Series[0].ChartType = SeriesChartType.Line;
 
-
-            // Задання початкового значення setpoint у ПІД-регуляторі
-            pid.setpoint = 0.70;
-
-
+            // Відображення початкових значень
             G1textBox.Text = G_in1.ToString("F2");
             G2textBox.Text = G_in2.ToString("F2");
             C1textBox.Text = C_in1.ToString("F2");
             C2textBox.Text = C_in2.ToString("F2");
-            SetPointBox.Text = pid.setpoint.ToString("F2");
-
-
+            SetPointBox.Text = setpoint.ToString("F2");
         }
 
         private void SimulationStep(object sender, EventArgs e)
         {
+            // Обчислення поточної помилки
+            double error = setpoint - concentration;
 
-            // Якщо обрано автоматичний режим, ПІД-регулятор коригує G_in1
+            // Якщо автоматичний режим, PID-регулятор коригує G_in1
             if (autoMode)
             {
-                double u_pid = pid.Compute(concentration, dt);
-                G_in1 = u_pid; // Керуюча дія оновлює G_in1
+                double u_pid = pid.Calc(error);
+                G_in1 = u_pid;
                 G1textBox.Text = G_in1.ToString("F2");
             }
-
 
             // Обчислення зміни концентрації за диференційним рівнянням
             double dC_dt = (G_in1 * C_in1 + G_in2 * C_in2 - (G_in1 + G_in2) * concentration) / (rho * V);
@@ -82,12 +85,8 @@ namespace MOSU1
             C_Out_Box.Text = concentration.ToString("F2");
 
             time += dt;
-
-            // Додавання точки на графік
             chartConcentration.Series[0].Points.AddXY(time, concentration);
         }
-
-
 
         // Перемикання між автоматичним та ручним режимами
         private void ModeSwitchButton_Click(object sender, EventArgs e)
@@ -96,14 +95,10 @@ namespace MOSU1
 
             if (autoMode)
             {
-                // При переході з ручного в автоматичний режим забезпечуємо безударне переключення:
-                // ініціалізуємо інтегратор, щоб вихід ПІД-регулятора відповідав поточному значенню G_in1.
-                double currentError = pid.setpoint - concentration;
-                if (pid.Ki != 0)
-                {
-                    pid.integrator = (G_in1 - pid.Kp * currentError) / pid.Ki;
-                }
-                pid.previousError = currentError;
+                // Обчислюємо поточну помилку
+                double error = setpoint - concentration;
+                // Скидання інтегральної частини для безударного переходу
+                pid.ResetIntegrator(G_in1, error);
                 ModeSwitchButton.Text = "Автоматичний режим";
             }
             else
@@ -111,17 +106,6 @@ namespace MOSU1
                 ModeSwitchButton.Text = "Ручний режим";
             }
         }
-
-
-
-
-
-
-
-
-
-
-
 
 
         private void StartButton_Click(object sender, EventArgs e)
@@ -174,13 +158,13 @@ namespace MOSU1
         }
         private void CpPlucButton_Click(object sender, EventArgs e)
         {
-            pid.setpoint += 0.1;
-            SetPointBox.Text = pid.setpoint.ToString("F2");
+            setpoint += 0.1; // Use the local setpoint field
+            SetPointBox.Text = setpoint.ToString("F2");
         }
         private void CpMinesButton_Click(object sender, EventArgs e)
         {
-            pid.setpoint -= 0.1;
-            SetPointBox.Text = pid.setpoint.ToString("F2");
+            setpoint -= 0.1; // Use the local setpoint field
+            SetPointBox.Text = setpoint.ToString("F2");
         }
 
 
@@ -216,7 +200,7 @@ namespace MOSU1
         {
             if (double.TryParse(SetPointBox.Text, out double newValue))
             {
-                pid.setpoint = newValue;
+                setpoint = newValue; // Update the local setpoint field
             }
         }
 
