@@ -6,8 +6,8 @@ namespace MOSU1
 {
     public partial class Mixer : Form
     {
-        private double V = 3.0; // Об'єм змішувача (м^3)
-        private double rho = 1000.0; // Густина рідини (кг/м^3)
+        private double V = 1.0; // Об'єм змішувача (м^3)
+        private double rho = 10.0; // Густина рідини (кг/м^3)
         private double G_in1, G_in2, C_in1, C_in2;
         private double concentration;
         private double time = 0;
