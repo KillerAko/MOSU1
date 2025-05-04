@@ -61,12 +61,20 @@ namespace MOSU1
             SpeedX10 = new Button();
             SpeedX50 = new Button();
             SpeedX100 = new Button();
+            ModeSwitchButton = new Button();
+            SetPointBox = new TextBox();
+            label6 = new Label();
+            CpMinesButton = new Button();
+            CpPlucButton = new Button();
+            C_Out_Box = new TextBox();
+            label7 = new Label();
             ((System.ComponentModel.ISupportInitialize)chartConcentration).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // chartConcentration
             // 
+            chartConcentration.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             chartArea1.Name = "ChartArea1";
             chartConcentration.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
@@ -78,13 +86,14 @@ namespace MOSU1
             series1.Legend = "Legend1";
             series1.Name = "c(t)";
             chartConcentration.Series.Add(series1);
-            chartConcentration.Size = new Size(846, 450);
+            chartConcentration.Size = new Size(1905, 842);
             chartConcentration.TabIndex = 0;
             chartConcentration.Text = "chart1";
             // 
             // StartButton
             // 
-            StartButton.Location = new Point(43, 655);
+            StartButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            StartButton.Location = new Point(43, 1047);
             StartButton.Name = "StartButton";
             StartButton.Size = new Size(142, 111);
             StartButton.TabIndex = 1;
@@ -94,7 +103,8 @@ namespace MOSU1
             // 
             // StopButton
             // 
-            StopButton.Location = new Point(43, 772);
+            StopButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            StopButton.Location = new Point(43, 1164);
             StopButton.Name = "StopButton";
             StopButton.Size = new Size(142, 115);
             StopButton.TabIndex = 2;
@@ -104,8 +114,9 @@ namespace MOSU1
             // 
             // pictureBox1
             // 
+            pictureBox1.Anchor = AnchorStyles.Top;
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(490, 72);
+            pictureBox1.Location = new Point(1019, 72);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(396, 359);
             pictureBox1.TabIndex = 3;
@@ -123,9 +134,10 @@ namespace MOSU1
             // 
             // label2
             // 
+            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(1169, 401);
+            label2.Location = new Point(2228, 793);
             label2.Name = "label2";
             label2.Size = new Size(94, 38);
             label2.TabIndex = 5;
@@ -139,6 +151,7 @@ namespace MOSU1
             G1textBox.Size = new Size(119, 45);
             G1textBox.TabIndex = 7;
             G1textBox.Text = "0";
+            G1textBox.Leave += G1textBox_Leave;
             // 
             // G1MinesButton
             // 
@@ -192,6 +205,7 @@ namespace MOSU1
             C1textBox.Size = new Size(119, 45);
             C1textBox.TabIndex = 11;
             C1textBox.Text = "0";
+            C1textBox.Leave += C1textBox_Leave;
             // 
             // label3
             // 
@@ -233,6 +247,7 @@ namespace MOSU1
             C2textBox.Size = new Size(119, 45);
             C2textBox.TabIndex = 19;
             C2textBox.Text = "0";
+            C2textBox.Leave += C2textBox_Leave;
             // 
             // label4
             // 
@@ -274,6 +289,7 @@ namespace MOSU1
             G2textBox.Size = new Size(119, 45);
             G2textBox.TabIndex = 15;
             G2textBox.Text = "0";
+            G2textBox.Leave += G2textBox_Leave;
             // 
             // label5
             // 
@@ -287,7 +303,8 @@ namespace MOSU1
             // 
             // SpeedX1
             // 
-            SpeedX1.Location = new Point(1141, 451);
+            SpeedX1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            SpeedX1.Location = new Point(2200, 843);
             SpeedX1.Name = "SpeedX1";
             SpeedX1.Size = new Size(139, 69);
             SpeedX1.TabIndex = 22;
@@ -297,7 +314,8 @@ namespace MOSU1
             // 
             // SpeedX4
             // 
-            SpeedX4.Location = new Point(1141, 526);
+            SpeedX4.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            SpeedX4.Location = new Point(2200, 918);
             SpeedX4.Name = "SpeedX4";
             SpeedX4.Size = new Size(139, 69);
             SpeedX4.TabIndex = 23;
@@ -307,7 +325,8 @@ namespace MOSU1
             // 
             // SpeedX10
             // 
-            SpeedX10.Location = new Point(1141, 601);
+            SpeedX10.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            SpeedX10.Location = new Point(2200, 993);
             SpeedX10.Name = "SpeedX10";
             SpeedX10.Size = new Size(139, 69);
             SpeedX10.TabIndex = 24;
@@ -317,7 +336,8 @@ namespace MOSU1
             // 
             // SpeedX50
             // 
-            SpeedX50.Location = new Point(1141, 676);
+            SpeedX50.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            SpeedX50.Location = new Point(2200, 1068);
             SpeedX50.Name = "SpeedX50";
             SpeedX50.Size = new Size(139, 69);
             SpeedX50.TabIndex = 25;
@@ -327,7 +347,8 @@ namespace MOSU1
             // 
             // SpeedX100
             // 
-            SpeedX100.Location = new Point(1141, 751);
+            SpeedX100.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            SpeedX100.Location = new Point(2200, 1143);
             SpeedX100.Name = "SpeedX100";
             SpeedX100.Size = new Size(139, 69);
             SpeedX100.TabIndex = 26;
@@ -335,11 +356,95 @@ namespace MOSU1
             SpeedX100.UseVisualStyleBackColor = true;
             SpeedX100.Click += SpeedX100_Click;
             // 
+            // ModeSwitchButton
+            // 
+            ModeSwitchButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ModeSwitchButton.Location = new Point(2000, 68);
+            ModeSwitchButton.Name = "ModeSwitchButton";
+            ModeSwitchButton.Size = new Size(302, 80);
+            ModeSwitchButton.TabIndex = 27;
+            ModeSwitchButton.Text = "Ручний режим";
+            ModeSwitchButton.UseVisualStyleBackColor = true;
+            ModeSwitchButton.Click += ModeSwitchButton_Click;
+            // 
+            // SetPointBox
+            // 
+            SetPointBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            SetPointBox.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            SetPointBox.Location = new Point(2148, 154);
+            SetPointBox.Name = "SetPointBox";
+            SetPointBox.Size = new Size(119, 45);
+            SetPointBox.TabIndex = 28;
+            SetPointBox.Text = "0.965";
+            SetPointBox.Leave += SetPointBox_Leave;
+            // 
+            // label6
+            // 
+            label6.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label6.AutoSize = true;
+            label6.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label6.Location = new Point(2009, 154);
+            label6.Name = "label6";
+            label6.Size = new Size(133, 38);
+            label6.TabIndex = 29;
+            label6.Text = ": SetPoint";
+            // 
+            // CpMinesButton
+            // 
+            CpMinesButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            CpMinesButton.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            CpMinesButton.Location = new Point(2141, 206);
+            CpMinesButton.Name = "CpMinesButton";
+            CpMinesButton.Size = new Size(60, 52);
+            CpMinesButton.TabIndex = 31;
+            CpMinesButton.Text = "-";
+            CpMinesButton.UseVisualStyleBackColor = true;
+            CpMinesButton.Click += CpMinesButton_Click;
+            // 
+            // CpPlucButton
+            // 
+            CpPlucButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            CpPlucButton.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            CpPlucButton.Location = new Point(2207, 205);
+            CpPlucButton.Name = "CpPlucButton";
+            CpPlucButton.Size = new Size(60, 52);
+            CpPlucButton.TabIndex = 30;
+            CpPlucButton.Text = "+";
+            CpPlucButton.UseVisualStyleBackColor = true;
+            CpPlucButton.Click += CpPlucButton_Click;
+            // 
+            // C_Out_Box
+            // 
+            C_Out_Box.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            C_Out_Box.Location = new Point(2148, 279);
+            C_Out_Box.Name = "C_Out_Box";
+            C_Out_Box.Size = new Size(125, 45);
+            C_Out_Box.TabIndex = 32;
+            C_Out_Box.Text = "0.95";
+            // 
+            // label7
+            // 
+            label7.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label7.AutoSize = true;
+            label7.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label7.Location = new Point(2030, 279);
+            label7.Name = "label7";
+            label7.Size = new Size(101, 38);
+            label7.TabIndex = 33;
+            label7.Text = ": C_out";
+            // 
             // Mixer
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1332, 938);
+            ClientSize = new Size(2391, 1330);
+            Controls.Add(label7);
+            Controls.Add(C_Out_Box);
+            Controls.Add(CpMinesButton);
+            Controls.Add(CpPlucButton);
+            Controls.Add(label6);
+            Controls.Add(SetPointBox);
+            Controls.Add(ModeSwitchButton);
             Controls.Add(SpeedX100);
             Controls.Add(SpeedX50);
             Controls.Add(SpeedX10);
@@ -404,5 +509,12 @@ namespace MOSU1
         private Button SpeedX10;
         private Button SpeedX50;
         private Button SpeedX100;
+        private Button ModeSwitchButton;
+        private TextBox SetPointBox;
+        private Label label6;
+        private Button CpMinesButton;
+        private Button CpPlucButton;
+        private TextBox C_Out_Box;
+        private Label label7;
     }
 }
