@@ -227,10 +227,9 @@ namespace MOSU1
         }
 
 
-
-
-
+        private void OptimizeButton_Click(object sender, EventArgs e)
+        { 
+        }
         
-
     }
 }

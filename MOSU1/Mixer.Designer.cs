@@ -30,9 +30,9 @@ namespace MOSU1
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Mixer));
             chartConcentration = new System.Windows.Forms.DataVisualization.Charting.Chart();
             StartButton = new Button();
@@ -68,6 +68,7 @@ namespace MOSU1
             CpPlucButton = new Button();
             C_Out_Box = new TextBox();
             label7 = new Label();
+            OptimizeButton = new Button();
             ((System.ComponentModel.ISupportInitialize)chartConcentration).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -75,17 +76,17 @@ namespace MOSU1
             // chartConcentration
             // 
             chartConcentration.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            chartArea1.Name = "ChartArea1";
-            chartConcentration.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            chartConcentration.Legends.Add(legend1);
+            chartArea2.Name = "ChartArea1";
+            chartConcentration.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            chartConcentration.Legends.Add(legend2);
             chartConcentration.Location = new Point(249, 476);
             chartConcentration.Name = "chartConcentration";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "c(t)";
-            chartConcentration.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Legend = "Legend1";
+            series2.Name = "c(t)";
+            chartConcentration.Series.Add(series2);
             chartConcentration.Size = new Size(1905, 842);
             chartConcentration.TabIndex = 0;
             chartConcentration.Text = "chart1";
@@ -433,11 +434,23 @@ namespace MOSU1
             label7.TabIndex = 33;
             label7.Text = ": C_out";
             // 
+            // OptimizeButton
+            // 
+            OptimizeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            OptimizeButton.Location = new Point(1550, 68);
+            OptimizeButton.Name = "OptimizeButton";
+            OptimizeButton.Size = new Size(302, 80);
+            OptimizeButton.TabIndex = 34;
+            OptimizeButton.Text = "OPTIMIZE";
+            OptimizeButton.UseVisualStyleBackColor = true;
+            OptimizeButton.Click += OptimizeButton_Click;
+            // 
             // Mixer
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(2391, 1330);
+            Controls.Add(OptimizeButton);
             Controls.Add(label7);
             Controls.Add(C_Out_Box);
             Controls.Add(CpMinesButton);
@@ -516,5 +529,6 @@ namespace MOSU1
         private Button CpPlucButton;
         private TextBox C_Out_Box;
         private Label label7;
+        private Button OptimizeButton;
     }
 }

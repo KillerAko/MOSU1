@@ -8,11 +8,7 @@ namespace SampleModel.Blocks
 {
     public class PIDBlock : BaseBlock
     {
-        // Параметри алгоритму:
-        // K – пропорційний коефіцієнт
-        // ki – використовуємо безпосередньо інтегральну константу, 
-        //     при бажанні можна працювати через часову константу Ti (Ti = 1/ki)
-        // Td – диференціальний коефіцієнт (час затримки)
+        
         public double K { get; set; } = 1;
         private double ki = 0.000001;
         public double Ki
@@ -28,7 +24,7 @@ namespace SampleModel.Blocks
 
         // Режим ручного управління
         public bool ManualMode { get; set; } = false;
-        // Значення виходу, яке задається вручну
+        
         public double Umanual { get; set; }
 
         // Поточний вихід блоку
@@ -58,7 +54,6 @@ namespace SampleModel.Blocks
         }
 
         // Метод Calc приймає на вхід "помилку" (error = setpoint - measured).
-        // Якщо потрібно – можна розширити клас та додати властивість setpoint.
         public override double Calc(double error)
         {
             double pTerm = K * error;
@@ -114,5 +109,166 @@ namespace SampleModel.Blocks
             return U;
 
         }
+
+        
+            // Add this method to PIDBlock (outside GauseMethod class)
+            public void OptimizePIDParameters(double setpoint, double measured, int maxIterations = 1000, double tolerance = 1e-6)
+            {
+                // Use 'this' to reference the instance fields K, Ki, and Td  
+                double[] value = { this.K, this.Ki, this.Td };
+                double[] u = value;
+                GaussZeidelMethodPID(this, u, setpoint, measured, maxIterations, tolerance);
+                this.K = u[0];
+                this.Ki = u[1];
+                this.Td = u[2];
+            }
+
+            // Add these methods to GauseMethod (make them public static)
+            public static void GaussZeidelMethodPID(PIDBlock pid, double[] u, double setpoint, double measured, int maxIterations, double tolerance)
+            {
+                for (int iter = 0; iter < maxIterations; iter++)
+                {
+                    double[] prevU = (double[])u.Clone();
+
+                    for (int i = 0; i < u.Length; i++)
+                    {
+                        double uNew = LineSearchPID(pid, u, i, setpoint, measured);
+                        u[i] = Math.Max(uNew, 0.000001); // PID params should be positive
+                    }
+
+                    if (IsConverged(u, prevU, tolerance))
+                        return;
+                }
+            }
+
+            static double LineSearchPID(PIDBlock pid, double[] u, int variableIndex, double setpoint, double measured)
+            {
+                double step = 0.1;
+                double bestValue = PIDObjective(pid, u, setpoint, measured);
+                double bestPoint = u[variableIndex];
+
+                double[] candidate = (double[])u.Clone();
+                candidate[variableIndex] = u[variableIndex] - step;
+                double newValue = PIDObjective(pid, candidate, setpoint, measured);
+                if (newValue < bestValue)
+                {
+                    bestValue = newValue;
+                    bestPoint = candidate[variableIndex];
+                }
+
+                candidate = (double[])u.Clone();
+                candidate[variableIndex] = u[variableIndex] + step;
+                newValue = PIDObjective(pid, candidate, setpoint, measured);
+                if (newValue < bestValue)
+                {
+                    bestValue = newValue;
+                    bestPoint = candidate[variableIndex];
+                }
+
+                return bestPoint;
+            }
+
+            static double PIDObjective(PIDBlock pid, double[] parameters, double setpoint, double measured)
+            {
+                // Save old values
+                double oldK = pid.K, oldKi = pid.Ki, oldTd = pid.Td;
+                // Set new parameters
+                pid.K = parameters[0];
+                pid.Ki = parameters[1];
+                pid.Td = parameters[2];
+
+                // Simulate a simple step response for N steps
+                double errorSum = 0;
+                double processValue = measured;
+                pid.intSum = 0;
+                pid.prevError = 0;
+                for (int t = 0; t < 50; t++)
+                {
+                    double error = setpoint - processValue;
+                    double control = pid.Calc(error);
+                    // Simple process model: processValue += control * 0.1 (arbitrary)
+                    processValue += control * 0.1;
+                    errorSum += Math.Abs(error);
+                }
+
+                // Restore old values
+                pid.K = oldK; pid.Ki = oldKi; pid.Td = oldTd;
+                return errorSum;
+            }
+            static void Main(string[] args)
+            {
+                Console.OutputEncoding = Encoding.UTF8;
+
+                double[] u = { 2.0, 1.0 };
+                int maxIterations = 1000;
+                double tolerance = 1e-6;
+
+                GaussZeidelMethod(u, maxIterations, tolerance);
+
+                Console.WriteLine($"Оптимальна точка: u1 = {u[0]:F2}, u2 = {u[1]:F2}");
+                Console.WriteLine($"Значення функції: {ComputeFunction(u):F2}");
+            }
+            static void GaussZeidelMethod(double[] u, int maxIterations, double tolerance)
+            {
+                for (int iter = 0; iter < maxIterations; iter++)
+                {
+                    double[] prevU = (double[])u.Clone();
+
+                    for (int i = 0; i < u.Length; i++)
+                    {
+                        double uNew = LineSearch(u, i);
+                        u[i] = Math.Max(uNew, -50);
+                    }
+
+                    if (IsConverged(u, prevU, tolerance))
+                    {
+                        Console.WriteLine($"Збіжність досягнута за {iter} ітераціями.");
+                        return;
+                    }
+
+                    Console.WriteLine($"Ітерація {iter + 1}: u1 = {u[0]:F2}, u2 = {u[1]:F2}, Функція: {ComputeFunction(u):F2}");
+                }
+                Console.WriteLine($"Максимальна кількість ітерацій досягнута.");
+            }
+
+            static bool IsConverged(double[] u, double[] prevU, double tolerance)
+            {
+                for (int i = 0; i < u.Length; i++)
+                {
+                    if (Math.Abs(u[i] - prevU[i]) >= tolerance)
+                        return false;
+                }
+                return true;
+            }
+
+
+
+            static double LineSearch(double[] u, int variableIndex)
+            {
+                double step = 0.1;
+                double bestValue = ComputeFunction(u);
+                double bestPoint = u[variableIndex];
+
+                double[] candidate = (double[])u.Clone();
+                candidate[variableIndex] = u[variableIndex] - step;
+                double newValue = ComputeFunction(candidate);
+                if (newValue < bestValue)
+                {
+                    bestValue = newValue;
+                    bestPoint = candidate[variableIndex];
+                }
+
+                candidate = (double[])u.Clone();
+                candidate[variableIndex] = u[variableIndex] + step;
+                newValue = ComputeFunction(candidate);
+                if (newValue < bestValue)
+                {
+                    bestValue = newValue;
+                    bestPoint = candidate[variableIndex];
+                }
+
+                return bestPoint;
+            }
+        
     }
 }
