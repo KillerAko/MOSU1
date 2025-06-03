@@ -30,8 +30,10 @@ namespace MOSU1
             InitializeComponent();
 
             // Ініціалізація PID-регулятора: передаємо крок dt
-            pid = new PIDBlock(0.5, 0.01, 0.01, dt);
-           
+            //pid = new PIDBlock(1.5, 0.1, 0.1, dt);
+            pid = new PIDBlock(5.7, 0.00001, 1.6, dt);
+
+
             pid.UpLimit = 1000.0;
             pid.DownLimit = 0.0;
 

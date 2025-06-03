@@ -191,13 +191,14 @@ namespace MOSU1.Blocks
                 double processValue = measured;
                 pid.intSum = 0;
                 pid.prevError = 0;
-                for (int t = 0; t < 10; t++)
+                for (int t = 0; t < 1000; t++)
                 {
                     double error = setpoint - processValue;
                     double control = pid.Calc(error);
-                    // Simple process model: processValue += control * 0.1 (arbitrary)
-                    processValue += control * 0.1;
-                    errorSum += Math.Abs(error);
+                // Simple process model: processValue += control * 0.1 (arbitrary)
+                double dProcess = (control - processValue) * 0.1; // пример, подберите под вашу задачу!
+                processValue += dProcess;
+                errorSum += error * error; ;
                 }
 
                 // Restore old values

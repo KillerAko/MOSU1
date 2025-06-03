@@ -29,7 +29,8 @@ namespace MOSU1
         public ControlSystem(double dt)
         {
             _dt = dt;
-            _pid = new PIDBlock(1.0, 0.1, 0.01, dt);
+            //_pid = new PIDBlock(1.0, 0.1, 0.01, dt);
+            //_pid = new PIDBlock(5.7, 0.00001, 1.6, dt);
         }
 
         public void SwitchToAutoMode()
