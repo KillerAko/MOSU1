@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using SampleModel.Blocks;  // Підключення нового PID-регулятора
+using MOSU1.Blocks;
+
 
 namespace MOSU1
 {
@@ -12,13 +14,14 @@ namespace MOSU1
         private double G_in1, G_in2, C_in1, C_in2;
         private double concentration;
         private double time = 0;
-        private double dt = 1;       // Крок часу (сек)
+        private double dt = 0.1;       // Крок часу (сек)
         private System.Windows.Forms.Timer simulationTimer;
 
         // Використовуємо оновлений PID-регулятор (PIDBlock)
         private PIDBlock pid;
         // Бажане значення концентрації
         private double setpoint; // Add this field to the Mixer class
+        //private double measured = 50; // Add this field to the Mixer class
 
         private bool autoMode = false;  // false – режим ручного керування, true – автоматичний режим
 
@@ -27,15 +30,13 @@ namespace MOSU1
             InitializeComponent();
 
             // Ініціалізація PID-регулятора: передаємо крок dt
-            pid = new PIDBlock(dt);
-            pid.K = 2.0;
-            pid.Ki = 0.5;
-            pid.Td = 0.1;
+            pid = new PIDBlock(0.5, 0.01, 0.01, dt);
+           
             pid.UpLimit = 1000.0;
             pid.DownLimit = 0.0;
 
             // Встановлюємо бажане значення концентрації
-            setpoint = 0.70;
+            setpoint = 10;
 
             // Ініціалізація таймера
             simulationTimer = new System.Windows.Forms.Timer();
@@ -48,8 +49,8 @@ namespace MOSU1
         private void InitializeSimulation()
         {
             // Початкові значення потоків та концентрацій
-            G_in1 = 2.0;
-            G_in2 = 2.0;
+            G_in1 = 1.0;
+            G_in2 = 1.0;
             C_in1 = 100;
             C_in2 = 1;
             concentration = (G_in1 * C_in1 + G_in2 * C_in2) / (G_in1 + G_in2);
@@ -228,8 +229,12 @@ namespace MOSU1
 
 
         private void OptimizeButton_Click(object sender, EventArgs e)
-        { 
+        {
+            double error = setpoint - concentration;
+            pid.OptimizePIDParameters(setpoint, concentration);
+            pid.ShowOptimizedParameters();
+
         }
-        
+
     }
 }

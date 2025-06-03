@@ -26,7 +26,7 @@ namespace MOSU1.TrashCan
             integrator = 0;
             previousError = 0;
             output = 0;
-            setpoint = 0;
+            setpoint = 15;
         }
 
         // Метод Compute() обчислює вихід регулятора за виміряним значенням і часом інтегрування dt
